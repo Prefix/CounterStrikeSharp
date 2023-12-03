@@ -2,3 +2,4 @@ ADD_LISTENER: name:string, callback:callback -> bool
 REMOVE_LISTENER: name:string, callback:callback -> bool
 CREATE_LISTENER: name:string -> bool
 DELETE_LISTENER: name:string -> bool
+EXECUTE_LISTENER: name:string, arguments:object[] -> void

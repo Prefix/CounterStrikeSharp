@@ -52,6 +52,20 @@ namespace CounterStrikeSharp.API.Core
 			}
 		}
 
+        public static void ExecuteListener(string name, object[] arguments){
+			lock (ScriptContext.GlobalScriptContext.Lock) {
+			ScriptContext.GlobalScriptContext.Reset();
+			ScriptContext.GlobalScriptContext.Push(name);
+			foreach (var obj in arguments)
+			{
+				ScriptContext.GlobalScriptContext.Push(obj);
+			}
+			ScriptContext.GlobalScriptContext.SetIdentifier(0xA065017B);
+			ScriptContext.GlobalScriptContext.Invoke();
+			ScriptContext.GlobalScriptContext.CheckErrors();
+			}
+		}
+
         public static void AddCommand(string name, string description, bool serveronly, int flags, InputArgument callback){
 			lock (ScriptContext.GlobalScriptContext.Lock) {
 			ScriptContext.GlobalScriptContext.Reset();

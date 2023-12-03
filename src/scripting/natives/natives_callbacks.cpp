@@ -14,9 +14,10 @@
  *  along with CounterStrikeSharp.  If not, see <https://www.gnu.org/licenses/>. *
  */
 
-#include "scripting//callback_manager.h"
+#include "scripting/callback_manager.h"
 #include "scripting/autonative.h"
 #include "scripting/script_engine.h"
+#include "core/log.h"
 
 namespace counterstrikesharp {
 
@@ -59,10 +60,37 @@ static bool DeleteListener(ScriptContext& script_context) {
     return false;
 }
 
+static void ExecuteListener(ScriptContext& script_context) {
+    auto name = script_context.GetArgument<const char*>(0);
+
+    ScriptCallback* callback = globals::callbackManager.FindCallback(name);
+
+    if (callback == nullptr)
+    {
+        CSSHARP_CORE_ERROR("Tried to execute invalid listener '{}'", name);
+        return;
+    }
+
+    if (callback && callback->GetFunctionCount()) {
+        callback->ScriptContext().Reset();
+        
+        CSSHARP_CORE_INFO("arguments: {}", callback->ScriptContextStruct().numArguments);
+
+        for (int i = 1; i < callback->ScriptContextStruct().numArguments; i++)
+        {
+            CSSHARP_CORE_INFO("pushing {}", callback->ScriptContextStruct().arguments[i]);
+            callback->ScriptContext().Push(callback->ScriptContextStruct().arguments[i]);
+        }
+
+        callback->Execute();
+    }
+}
+
 REGISTER_NATIVES(callbacks, {
     ScriptEngine::RegisterNativeHandler("ADD_LISTENER", AddListener);
     ScriptEngine::RegisterNativeHandler("REMOVE_LISTENER", RemoveListener);
     ScriptEngine::RegisterNativeHandler("CREATE_LISTENER", CreateListener);
     ScriptEngine::RegisterNativeHandler("DELETE_LISTENER", DeleteListener);
+    ScriptEngine::RegisterNativeHandler("EXECUTE_LISTENER", ExecuteListener);
 })
 }  // namespace counterstrikesharp

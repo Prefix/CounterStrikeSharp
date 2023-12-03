@@ -365,6 +365,11 @@ namespace CounterStrikeSharp.API.Core
             }
         }
 
+        public void ExecuteListener(string name, params object[] args)
+        {
+            NativeAPI.ExecuteListener(name, args);
+        }
+
         public Timer AddTimer(float interval, Action callback, TimerFlags? flags = null)
         {
             var timer = new Timer(interval, callback, flags ?? 0);
