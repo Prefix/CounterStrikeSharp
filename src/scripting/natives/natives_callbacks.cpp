@@ -34,8 +34,35 @@ static bool RemoveListener(ScriptContext &script_context) {
     return globals::callbackManager.TryRemoveFunction(name, callback);
 }
 
+static bool CreateListener(ScriptContext& script_context) {
+    auto name = script_context.GetArgument<const char*>(0);
+
+    if (globals::callbackManager.FindCallback(name) == nullptr)
+    {
+        globals::callbackManager.CreateCallback(name);
+        return true;
+    }
+
+    return false;
+}
+
+static bool DeleteListener(ScriptContext& script_context) {
+    auto name = script_context.GetArgument<const char*>(0);
+
+    ScriptCallback* callback = globals::callbackManager.FindCallback(name);
+
+    if (callback != nullptr) {
+        globals::callbackManager.ReleaseCallback(callback);
+        return true;
+    }
+
+    return false;
+}
+
 REGISTER_NATIVES(callbacks, {
     ScriptEngine::RegisterNativeHandler("ADD_LISTENER", AddListener);
     ScriptEngine::RegisterNativeHandler("REMOVE_LISTENER", RemoveListener);
+    ScriptEngine::RegisterNativeHandler("CREATE_LISTENER", CreateListener);
+    ScriptEngine::RegisterNativeHandler("DELETE_LISTENER", DeleteListener);
 })
 }  // namespace counterstrikesharp
