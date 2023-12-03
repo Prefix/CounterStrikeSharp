@@ -37,6 +37,7 @@ static bool RemoveListener(ScriptContext &script_context) {
 
 static bool CreateListener(ScriptContext& script_context) {
     auto name = script_context.GetArgument<const char*>(0);
+    CSSHARP_CORE_INFO("CreateListener: {}", name);
 
     if (globals::callbackManager.FindCallback(name) == nullptr)
     {
@@ -49,7 +50,7 @@ static bool CreateListener(ScriptContext& script_context) {
 
 static bool DeleteListener(ScriptContext& script_context) {
     auto name = script_context.GetArgument<const char*>(0);
-
+    CSSHARP_CORE_INFO("DeleteListener: {}", name);
     ScriptCallback* callback = globals::callbackManager.FindCallback(name);
 
     if (callback != nullptr) {
@@ -71,15 +72,21 @@ static void ExecuteListener(ScriptContext& script_context) {
         return;
     }
 
+    CSSHARP_CORE_TRACE("ExecuteListener: {}", name);
+    int argumentCount = script_context.GetArgumentCount();
+
+    if (argumentCount > script_context.MaxArguments) {
+        CSSHARP_CORE_ERROR("Passing more than {} parameters to a function is not supported", script_context.MaxArguments);
+        return;
+    }
+
     if (callback && callback->GetFunctionCount()) {
         callback->ScriptContext().Reset();
-        
-        CSSHARP_CORE_INFO("arguments: {}", callback->ScriptContextStruct().numArguments);
 
-        for (int i = 1; i < callback->ScriptContextStruct().numArguments; i++)
+        for (int i = 1; i < argumentCount; i++)
         {
-            CSSHARP_CORE_INFO("pushing {}", callback->ScriptContextStruct().arguments[i]);
-            callback->ScriptContext().Push(callback->ScriptContextStruct().arguments[i]);
+            CSSHARP_CORE_TRACE("Pushing {}", script_context.GetArgument<void*>(i));
+            callback->ScriptContext().Push(script_context.GetArgument<void*>(i));
         }
 
         callback->Execute();
