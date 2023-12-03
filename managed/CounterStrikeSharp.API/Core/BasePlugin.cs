@@ -108,6 +108,9 @@ namespace CounterStrikeSharp.API.Core
         public readonly Dictionary<Delegate, CallbackSubscriber> Listeners =
             new Dictionary<Delegate, CallbackSubscriber>();
 
+        private readonly List<string> CustomListeners = 
+            new List<string>();
+
         public readonly List<Timer> Timers = new List<Timer>();
         
         public delegate HookResult GameEventHandler<T>(T @event, GameEventInfo info) where T : GameEvent;
@@ -342,6 +345,26 @@ namespace CounterStrikeSharp.API.Core
             Listeners.Remove(handler);
         }
 
+        public void CreateListener(string name)
+        {
+            if (CustomListeners.Contains(name)) return;
+
+            if (NativeAPI.CreateListener(name))
+            {
+                CustomListeners.Add(name);
+            }
+        }
+
+        public void DeleteListener(string name)
+        {
+            if (!CustomListeners.Contains(name)) return;
+
+            if (NativeAPI.DeleteListener(name))
+            {
+                CustomListeners.Remove(name);
+            }
+        }
+
         public Timer AddTimer(float interval, Action callback, TimerFlags? flags = null)
         {
             var timer = new Timer(interval, callback, flags ?? 0);
@@ -462,6 +485,11 @@ namespace CounterStrikeSharp.API.Core
             foreach (var subscriber in Listeners.Values)
             {
                 subscriber.Dispose();
+            }
+
+            foreach (var listener in CustomListeners)
+            {
+                NativeAPI.DeleteListener(listener);
             }
 
             foreach (var timer in Timers)
