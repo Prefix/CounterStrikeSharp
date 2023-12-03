@@ -126,5 +126,28 @@ namespace CounterStrikeSharp.API.Core
         /// <param name="hostname">New hostname of the server</param>
         [ListenerName("OnHostNameChanged")]
         public delegate void OnHostNameChanged(string hostname);
+
+        /// <summary>
+        /// Called when every plugin has been loaded.
+        /// Note that this is only called once at startup.
+        /// </summary>
+        [ListenerName("OnAllPluginsLoaded")]
+        public delegate void OnAllPluginsLoaded();
+
+        /// <summary>
+        /// Called when a plugin is loaded.
+        /// </summary>
+        /// <param name="pluginName">Name of the loaded plugin.</param>
+        /// <param name="hotReload">Whether it was a hotreload or not.</param>
+        [ListenerName("OnPluginLoaded")]
+        public delegate void OnPluginLoaded(string pluginName, bool hotReload);
+
+        /// <summary>
+        /// Called when a plugin is unloaded.
+        /// </summary>
+        /// <param name="pluginName">Name of the unloaded plugin.</param>
+        /// <param name="hotReload">Whether it was a hotreload or not.</param>
+        [ListenerName("OnPluginUnloaded")]
+        public delegate void OnPluginUnloaded(string pluginName, bool hotReload);
     }
 }

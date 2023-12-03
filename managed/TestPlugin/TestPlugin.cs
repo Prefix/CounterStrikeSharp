@@ -316,6 +316,21 @@ namespace TestPlugin
                         return;
                 }
             });
+
+            RegisterListener<Listeners.OnAllPluginsLoaded>(() =>
+            {
+                Logger.LogInformation("OnAllPluginsLoaded called!");
+            });
+
+            RegisterListener<Listeners.OnPluginLoaded>((string pluginName, bool hotReload) =>
+            {
+                Logger.LogInformation("OnPluginLoaded called with {0} {1}", pluginName, hotReload);
+            });
+
+            RegisterListener<Listeners.OnPluginUnloaded>((string pluginName, bool hotReload) =>
+            {
+                Logger.LogInformation("OnPluginUnloaded called with {0} {1}", pluginName, hotReload);
+            });
         }
 
         private void SetupMenus()

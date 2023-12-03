@@ -20,6 +20,8 @@ using System.Threading.Tasks;
 using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Hosting;
 using CounterStrikeSharp.API.Core.Logging;
+using CounterStrikeSharp.API.Modules.Listeners;
+
 using McMaster.NETCore.Plugins;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -46,6 +48,9 @@ namespace CounterStrikeSharp.API.Core.Plugin
 
         // TOOD: ServiceCollection
         private ILogger _logger = CoreLogging.Factory.CreateLogger<PluginContext>();
+
+        private static readonly Listener<string, bool> _onPluginLoaded = new Listener<string, bool>("OnPluginLoaded");
+        private static readonly Listener<string, bool> _onPluginUnloaded = new Listener<string, bool>("OnPluginUnloaded");
 
         public PluginContext(IServiceProvider applicationServiceProvider, IScriptHostConfiguration hostConfiguration, string path, int id)
         {
@@ -187,6 +192,7 @@ namespace CounterStrikeSharp.API.Core.Plugin
                 _logger.LogInformation("Finished loading plugin {Name}", Plugin.ModuleName);
 
                 State = PluginState.Loaded;
+                _onPluginLoaded.Execute(Plugin.ModuleName, hotReload);
             }
         }
 
@@ -204,6 +210,7 @@ namespace CounterStrikeSharp.API.Core.Plugin
             Plugin.Dispose();
 
             _logger.LogInformation("Finished unloading plugin {Name}", cachedName);
+            _onPluginUnloaded.Execute(cachedName, hotReload);
         }
     }
 }

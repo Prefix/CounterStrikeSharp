@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CounterStrikeSharp.API.Core.Hosting;
+using CounterStrikeSharp.API.Modules.Listeners;
+
 using Microsoft.Extensions.Logging;
 
 namespace CounterStrikeSharp.API.Core.Plugin.Host;
@@ -11,6 +13,7 @@ public class PluginManager : IPluginManager
     private readonly IScriptHostConfiguration _scriptHostConfiguration;
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<PluginManager> _logger;
+    private readonly Listener _onAllPluginsLoaded = new Listener("OnAllPluginsLoaded");
 
     public PluginManager(IScriptHostConfiguration scriptHostConfiguration, ILogger<PluginManager> logger, IServiceProvider serviceProvider)
     {
@@ -38,6 +41,8 @@ public class PluginManager : IPluginManager
                 _logger.LogError(e, "Failed to load plugin from {Path}", path);
             }
         }
+
+        _onAllPluginsLoaded.Execute();
     }
 
     public IEnumerable<PluginContext> GetLoadedPlugins()
