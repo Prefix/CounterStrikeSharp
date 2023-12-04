@@ -347,21 +347,23 @@ namespace CounterStrikeSharp.API.Core
 
         public void CreateListener(string name)
         {
-            if (CustomListeners.Contains(name)) return;
-
-            if (NativeAPI.CreateListener(name))
+            if (!CustomListeners.Contains(name) && NativeAPI.CreateListener(name))
             {
                 CustomListeners.Add(name);
+            } else
+            {
+                Logger.LogError($"Listener '{name}' has been already created.");
             }
         }
 
         public void DeleteListener(string name)
         {
-            if (!CustomListeners.Contains(name)) return;
-
-            if (NativeAPI.DeleteListener(name))
+            if (CustomListeners.Contains(name) && NativeAPI.DeleteListener(name))
             {
                 CustomListeners.Remove(name);
+            } else
+            {
+                Logger.LogError($"Listener '{name}' does not exists.");
             }
         }
 
@@ -494,7 +496,10 @@ namespace CounterStrikeSharp.API.Core
 
             foreach (var listener in CustomListeners)
             {
-                NativeAPI.DeleteListener(listener);
+                if (!NativeAPI.DeleteListener(listener))
+                {
+                    Logger.LogError("Failed to remove listener {0}", listener);
+                }
             }
 
             foreach (var timer in Timers)
