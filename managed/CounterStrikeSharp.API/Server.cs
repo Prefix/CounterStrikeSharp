@@ -144,7 +144,7 @@ namespace CounterStrikeSharp.API
         public static string[] GetMapList()
         {
             var mapListPath = Path.Join(GameDirectory, "maplist.txt");
-            if (!File.Exists(mapListPath)) throw new Exception("Maplist.txt could not be found!");
+            if (!File.Exists(mapListPath)) throw new FileNotFoundException($"maplist.txt could not be found at path '{mapListPath}'");
 
             var mapNames = File.ReadAllLines(mapListPath);
 
