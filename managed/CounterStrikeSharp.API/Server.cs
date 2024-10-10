@@ -150,7 +150,7 @@ namespace CounterStrikeSharp.API
 
             return mapNames.Where(map =>
             {
-                var filePath = Path.Join(GameDirectory, "maps", $"{map}.bsp");
+                var filePath = Path.Join(GameDirectory, "maps", $"{map}.vpk");
                 return File.Exists(filePath) && IsMapValid(map);
             }).ToArray();
         }
