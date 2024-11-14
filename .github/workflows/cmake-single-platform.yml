@@ -19,12 +19,11 @@ jobs:
     outputs:
       buildnumber: ${{ steps.buildnumber.outputs.build_number }}
     steps:
-      - name: Generate build number
+      - name: Set static build number
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         id: buildnumber
-        uses: onyxmueller/build-tag-number@v1
-        with:
-          token: ${{secrets.github_token}}
+        run: echo "::set-output name=build_number::300"
+
 
   build_windows:
     needs: setup
@@ -41,7 +40,7 @@ jobs:
 
       - name: Main build number
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        run: echo "BUILD_NUMBER=${300+{ needs.setup.outputs.buildnumber }}" >> $GITHUB_ENV
+        run: echo "BUILD_NUMBER=300" >> $GITHUB_ENV
 
       - name: Visual Studio environment
         shell: cmd
@@ -97,7 +96,7 @@ jobs:
 
       - name: Main build number
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        run: echo "BUILD_NUMBER=${300+{ needs.setup.outputs.buildnumber }}" >> $GITHUB_ENV
+        run: echo "BUILD_NUMBER=300" >> $GITHUB_ENV
 
       - uses: actions/checkout@v3
         with:
@@ -137,7 +136,7 @@ jobs:
 
       - name: Main build number
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        run: echo "BUILD_NUMBER=${300+{ needs.setup.outputs.buildnumber }}" >> $GITHUB_ENV
+        run: echo "BUILD_NUMBER=300" >> $GITHUB_ENV
 
       # We don't need expensive submodules for the managed side.
       - uses: actions/checkout@v3
